@@ -461,8 +461,8 @@ class StableMusicBot:
 
     async def download_ultra_fast(self, update: Update, context: ContextTypes.DEFAULT_TYPE, track: dict)
     -> bool:
-    """Упрощенный метод скачивания"""
-    url = track.get('webpage_url') or track.get('url')
+        """Упрощенный метод скачивания"""
+        url = track.get('webpage_url') or track.get('url')
     if not url:
         return False
 
@@ -1733,5 +1733,6 @@ if __name__ == '__main__':
     bot = StableMusicBot()
 
     bot.run()
+
 
 
