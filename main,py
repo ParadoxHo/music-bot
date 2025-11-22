@@ -165,7 +165,7 @@ class StableMusicBot:
 
     # ==================== СКАЧИВАНИЕ ====================
     async def download_and_send_track(self, update: Update, context: ContextTypes.DEFAULT_TYPE, track: dict) -> bool:
-        """Основной метод скачивания"""
+        """Основной метод скачивания - ИСПРАВЛЕННАЯ ВЕРСИЯ"""
         url = track.get('webpage_url') or track.get('url')
         if not url:
             return False
@@ -173,7 +173,7 @@ class StableMusicBot:
         chat_id = update.effective_chat.id
         
         try:
-            # Отправляем сообщение о начале скачивания
+            # ВСЕГДА отправляем новое сообщение вместо редактирования
             await context.bot.send_message(
                 chat_id=chat_id,
                 text=f"⏬ Скачиваю: {track.get('title', 'Трек')}"
@@ -721,9 +721,11 @@ class StableMusicBot:
             await self.process_track_download(update, context, track)
 
     async def process_track_download(self, update: Update, context: ContextTypes.DEFAULT_TYPE, track: dict):
+        """Упрощенный метод обработки скачивания - ИСПРАВЛЕННЫЙ"""
         user = update.effective_user
         chat_id = update.effective_chat.id
 
+        # ВСЕГДА отправляем новое сообщение вместо редактирования
         await context.bot.send_message(
             chat_id=chat_id,
             text=f'⏬ Скачиваю: {track.get("title", "Трек")}'
@@ -752,6 +754,11 @@ class StableMusicBot:
                 chat_id=chat_id,
                 text="✅ Готово! Что дальше?",
                 reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+        else:
+            await context.bot.send_message(
+                chat_id=chat_id,
+                text='❌ Не удалось скачать трек. Попробуйте другой.'
             )
 
     # ==================== НАСТРОЙКИ ====================
