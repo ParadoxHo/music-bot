@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 import sys
 import json
@@ -10,17 +10,21 @@ import asyncio
 from datetime import datetime, timedelta
 from pathlib import Path
 
+# ==================== FIX FOR PYTHON 3.13 ====================
+# Создаем заглушку для imghdr в Python 3.13+
+class ImghdrDummy:
+    @staticmethod
+    def what(file, h=None):
+        return 'jpeg'
+
+sys.modules['imghdr'] = ImghdrDummy()
+
 # ==================== CONFIG ====================
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 ADMIN_IDS = os.environ.get('ADMIN_IDS', '').split(',')  # ⬅️ ВАЖНАЯ ПЕРЕМЕННАЯ!
 
 if not BOT_TOKEN:
     print("❌ Ошибка: BOT_TOKEN не установлен в Secrets")
-    print("📝 Инструкция по настройке:")
-    print("1. В Replit нажмите на замок (Secrets) слева")
-    print("2. Добавьте ключ: BOT_TOKEN")
-    print("3. В значение вставьте токен вашего бота от @BotFather")
-    print("4. Перезапустите repl")
     sys.exit(1)
 
 # Очищаем и форматируем ADMIN_IDS
@@ -31,7 +35,7 @@ if not ADMIN_IDS:
 else:
     print(f"✅ Админы настроены: {ADMIN_IDS}")
 
-RESULTS_PER_PAGE = 8  # Уменьшил для лучшего UX
+RESULTS_PER_PAGE = 8
 DATA_FILE = Path('user_data.json')
 CHARTS_FILE = Path('charts_cache.json')
 MAX_FILE_SIZE_MB = 50
@@ -1717,4 +1721,5 @@ class StableMusicBot:
 
 if __name__ == '__main__':
     bot = StableMusicBot()
+
     bot.run()
