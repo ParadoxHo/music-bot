@@ -1,35 +1,39 @@
 import os
 import sys
-import asyncio
-from threading import Thread
+import threading
+import logging
 from flask import Flask
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# Добавляем путь к проекту
-sys.path.append('/opt/render/project/src')
-sys.path.append('.')
-
 def run_bot():
-    """Запускает бота в отдельном потоке"""
+    """Запускает Telegram бота"""
     try:
-        if os.path.exists('main.py'):
-            from main import bot
-            print("🚀 Запуск бота из main.py...")
-            bot.run()
-        elif os.path.exists('/opt/render/project/src/main.py'):
-            sys.path.append('/opt/render/project/src')
-            from main import bot
-            print("🚀 Запуск бота из /opt/render/project/src/main.py...")
-            bot.run()
-        else:
-            print("❌ Файл main.py не найден")
+        # Добавляем текущую директорию в путь
+        sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+        
+        from main import bot
+        logger.info("🚀 Starting Telegram Bot...")
+        bot.run()
+        
     except Exception as e:
-        print(f"❌ Ошибка запуска бота: {e}")
+        logger.error(f"❌ Bot failed: {e}")
 
 @app.route('/')
 def home():
-    return "🎵 Music Bot is running! Use Telegram to interact with the bot."
+    return """
+    <html>
+        <head><title>Music Bot</title></head>
+        <body style="font-family: Arial; text-align: center; padding: 50px;">
+            <h1 style="color: green;">🎵 Music Bot is Running!</h1>
+            <p>Use Telegram to interact with the bot.</p>
+        </body>
+    </html>
+    """
 
 @app.route('/health')
 def health():
@@ -37,10 +41,10 @@ def health():
 
 if __name__ == '__main__':
     # Запускаем бота в отдельном потоке
-    bot_thread = Thread(target=run_bot, daemon=True)
+    bot_thread = threading.Thread(target=run_bot, daemon=True)
     bot_thread.start()
-    print("✅ Бот запущен в отдельном потоке")
+    logger.info("✅ Bot thread started")
     
-    # Запускаем Flask сервер
-    print("🌐 Flask сервер запускается на порту 5000")
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    # Запускаем Flask
+    logger.info("🌐 Flask server starting on port 5000")
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)
